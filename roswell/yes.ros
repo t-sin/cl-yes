@@ -1,0 +1,39 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+(progn ;;init forms
+  (ros:ensure-asdf)
+  #+quicklisp (ql:quickload '(:cl-yes) :silent t)
+  )
+
+(defpackage :ros.script.yes.3720692001
+  (:use :cl))
+(in-package :ros.script.yes.3720692001)
+
+(defun print-usage ()
+  (format t "
+usage: yes [STRING]...~%
+       yes OPTION
+
+OPTION
+       -h --help    print this help message.
+       -v --version print version.
+
+"))
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (handler-case
+      (if (> (length argv) 0)
+          (cond ((or (member "-h" argv :test #'string=)
+                     (member "--help" argv :test #'string=))
+                 (print-usage))
+                ((or (member "-v" argv :test #'string=)
+                     (member "--version" argv :test #'string=))
+                 (format t "cl-yes v0.1~%~%"))
+                (t (cl-yes:yes *standard-output* (first argv))))
+          (cl-yes:yes *standard-output*))
+    (condition (e) (declare (ignore e)) nil)))
+;;; vim: set ft=lisp lisp:
